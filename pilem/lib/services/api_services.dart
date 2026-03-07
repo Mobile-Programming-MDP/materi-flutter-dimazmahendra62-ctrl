@@ -1,46 +1,42 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
-class ApiServices {
+class ApiService {
   static const String baseUrl = "https://api.themoviedb.org/3";
-  //ganti dengan Apikey maisng-masing
-  static const String apikey =
-  "2dbf53e0e253c5073603db3416cd67a9";
+  //ganti dengan APIKey masing-masing
+  static const String apiKey = "2dbf53e0e253c5073603db3416cd67a9";
   //1. mengambil list movie yang saat ini tayang
   Future<List<Map<String, dynamic>>> getAllMovies() async {
     final response = await http.get(
-      Uri.parse("$baseUrl/movie/now_playing?
-      api_key=$apikey"),
+      Uri.parse("$baseUrl/movie/now_playing?api_key=$apiKey"),
     );
     final data = json.decode(response.body);
-    return List<Map<String, dynamic>>.from(data ['results']);
+    return List<Map<String, dynamic>>.from(data['results']);
   }
+  
   //2. mengambil list movie yang sedang trending minggu ini
-  Future<List<Map<String, dynamic>>> getTrendingMovies()
-  async {
+  Future<List<Map<String, dynamic>>> getTrendingMovies() async {
     final response = await http.get(
-      Uri.parse("$baseUrl/trending/movie/week?
-      api_key=$apikey"),
+      Uri.parse("$baseUrl/trending/movie/week?api_key=$apiKey"),
     );
     final data = json.decode(response.body);
-    return List<Map<String, dynamic>>.from(data ['results']);
+    return List<Map<String, dynamic>>.from(data['results']);
   }
-  //3. mengambil list popular movie
-  Future<List<Map<String, dynamic>>> getPopularMovies()
-  async {
+
+  //3. mengambil list popular movie 
+  Future<List<Map<String, dynamic>>> getPopularMovies() async {
     final response = await http.get(
-      Uri.parse("$baseUrl/movie/popular/api_key=$apikey"),
+      Uri.parse("$baseUrl/movie/popular?api_key=$apiKey"),
     );
     final data = json.decode(response.body);
-    return List<Map<String, dynamic>>.from(data ['results']);
+    return List<Map<String, dynamic>>.from(data['results']);
   }
 
   //4. mengambil list movie melalui pencarian
-  Future<List<Map<String, dynamic>>> getTrendingMovies()
-  async {
+  Future<List<Map<String, dynamic>>> searchMovies(String query) async {
     final response = await http.get(
-      Uri.parse("$baseUrl/trending/movie/week?
-      api_key=$apikey"),
+      Uri.parse("$baseUrl/search/movie?query=$query&api_key=$apiKey"),
     );
     final data = json.decode(response.body);
-    return List<Map<String, dynamic>>.from(data ['results']);
+    return List<Map<String, dynamic>>.from(data['results']);
+  }
+}

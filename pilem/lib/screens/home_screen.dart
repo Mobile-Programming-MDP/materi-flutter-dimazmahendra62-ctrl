@@ -1,90 +1,119 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:pilem/models/movie.dart';
+import 'package:pilem/screens/detail_screen.dart';
 import 'package:pilem/services/api_services.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
-  @overrride
-  State<HomeScreen> createState() => _HomeScreen();
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final ApiServices _apiServices = ApiServices();
+  final ApiService _apiService = ApiService();
 
   List<Movie> _allMovies = [];
   List<Movie> _trendingMovies = [];
   List<Movie> _popularMovies = [];
 
-  Future<void> loasMovies() async{
-    final List<Map<String, dynamic>> allMoviesData = await_apiService.
-    getAllMovies();
+  Future<void> _loadMovies() async {
+    final List<Map<String, dynamic>> allMoviesData =
+        await _apiService.getAllMovies();
+    final List<Map<String, dynamic>> trendingMoviesData =
+        await _apiService.getTrendingMovies();
+    final List<Map<String, dynamic>> popularMoviesData =
+        await _apiService.getPopularMovies();
 
     setState(() {
-      _allMovies = allMoviesData.map((e) => Movie.fromJson(e)).toList();
-      _trendingMovies = _trendingMoviesData.map(e)) => Movie.fromJson(e)).toList();
-      _popularMovies = _popularMoviesData.map((e) => Movie.fromJson(e)).toList();
+      _allMovies = allMoviesData.map((json) => Movie.fromJson(json)).toList();
+      _trendingMovies =
+          trendingMoviesData.map((json) => Movie.fromJson(json)).toList();
+      _popularMovies =
+          popularMoviesData.map((json) => Movie.fromJson(json)).toList();
     });
   }
 
-
-  @Override
+  @override
   void initState() {
     super.initState();
     _loadMovies();
   }
 
-  @Override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Pilem"),
+        title: const Text("Pilem"),
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-              _buildMovieList("All Movies", _allMovies),
-              _buildMovieList("Trending Movies", _trendingMovies),
-              _buildMovieList("Popular Movies", _popularMovies),
+            _buildMoviesList("All Movies", _allMovies),
+            _buildMoviesList("Trending Movies", _trendingMovies),
+            _buildMoviesList("Popular Movies", _popularMovies),
           ],
         ),
       ),
     );
   }
 
-  Widget buildMovieList(String title, List<Movie> movies){
+  Widget _buildMoviesList(String title, List<Movie> movies) {
     return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          padding(
-            padding: EdgeInsets.all(
-            child: Text(
-              title,
-              style: TextStyle(frontSize: 20, fontWeight: FontWeight.
-              bold),
-            ),        
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Menampilkan Title Kategori Movies
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-          SizeBox{
-            height: 200,
-            child: ListView.builder(
+        ),
+        //Menapilkan thumnail dan judul movies
+        SizedBox(
+          height: 200,
+          child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: movies.length,
-              itemBuilder: (BuildContext context, int index) {
+              itemBuilder: (BuildContext build, int index) {
                 final Movie movie = movies[index];
-                return Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Column(
-                    
+                return GestureDetector(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DetailScreen(movie: movie),
+                    ),
                   ),
-                    
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        Image.network(
+                          "https://image.tmdb.org/t/p/w500${movie.posterPath}",
+                          width: 100,
+                          height: 150,
+                          fit: BoxFit.cover,
+                        ),
+                        Text(
+                          movie.title.length > 14
+                              ? '${movie.title.substring(0, 10)}...'
+                              : movie.title,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                )
-              }
-            )
-          }
-        ],
+                );
+              }),
+        )
+      ],
     );
   }
 }
