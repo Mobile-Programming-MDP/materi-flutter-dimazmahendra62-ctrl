@@ -22,6 +22,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  String generateAvatarUrl(String? fulltime) {
+    final formattedName = fulltime!.trim().replaceAll('','+');
+    return 'https://ui-avatars.com/api/?name=$formattedName&colour=FFFFFF&background=000000';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
