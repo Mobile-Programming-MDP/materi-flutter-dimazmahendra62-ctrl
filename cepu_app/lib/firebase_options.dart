@@ -66,4 +66,5 @@ class DefaultFirebaseOptions {
     projectId: 'first-app-15332',
     storageBucket: 'first-app-15332.firebasestorage.app',
   );
+
 }
